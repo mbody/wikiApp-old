@@ -7,18 +7,17 @@
  */
 
 import React, {Component} from 'react';
-
+import { PersistGate } from 'redux-persist/lib/integration/react';
 import { createAppContainer } from 'react-navigation';
 import {TabNavigator} from "./TabNavigator";
 
-import {Provider as PaperProvider} from 'react-native-paper';
+import {ActivityIndicator, Provider as PaperProvider} from 'react-native-paper';
 import {Theme} from "./Theme";
 
 import {Provider as StoreProvider} from 'react-redux';
-import {configureStore} from "./redux/configureStore";
+import {store, persistor} from "./redux/configureStore";
 
 const Navigation = createAppContainer(TabNavigator);
-const store = configureStore();
 
 export default class App extends Component {
 
@@ -26,7 +25,9 @@ export default class App extends Component {
         return (
             <StoreProvider store={store}>
                 <PaperProvider theme={Theme}>
-                    <Navigation/>
+                    <PersistGate loading={<ActivityIndicator />} persistor={persistor}>
+                        <Navigation />
+                    </PersistGate>
                 </PaperProvider>
             </StoreProvider>
         );

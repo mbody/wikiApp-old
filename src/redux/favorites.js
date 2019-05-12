@@ -10,7 +10,7 @@ export const addFavoriteAction = (page) => ({type: ADD, page});
 export const removeFavoriteAction = (page) => ({type: REMOVE, page});
 
 // initial state
-const initialState = {pages: [{pageid:15353}]};
+const initialState = {pages: []};
 
 // Reducer (with export default)
 export default function reducer(state = initialState, action = {}) {
