@@ -10,16 +10,21 @@ export const addFavoriteAction = (page) => ({type: ADD, page});
 export const removeFavoriteAction = (page) => ({type: REMOVE, page});
 
 // initial state
-const initialState = {pages: []};
+const initialState = {pages: [{pageid:15353}]};
 
 // Reducer (with export default)
 export default function reducer(state = initialState, action = {}) {
     switch (action.type) {
         case ADD:
-            // TODO : add action payload to state favorites
-            break;
+            return {
+                ...state,
+                pages:state.pages.concat(action.page)
+            };
         case REMOVE:
-            // TODO : remove action payload to state favorites
+            return {
+                ...state,
+                pages:state.pages.filter(p=>p.pageid!=action.page.pageid)
+            };
             break;
     }
     return state;

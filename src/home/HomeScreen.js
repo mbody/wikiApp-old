@@ -8,11 +8,11 @@
 
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, FlatList, Image} from 'react-native';
-import {ActivityIndicator, Searchbar, Card, Paragraph, Title} from "react-native-paper";
+import {ActivityIndicator, Searchbar, Card, IconButton} from "react-native-paper";
 import {Colors} from "../Theme";
 import {wikiService} from "../services/WikiService";
-import { connect } from 'react-redux';
-import {addFavoriteAction} from "../redux/favorites";
+import {connect} from 'react-redux';
+import {addFavoriteAction, removeFavoriteAction} from "../redux/favorites";
 
 type Props = {};
 
@@ -25,10 +25,14 @@ class HomeScreen extends Component<Props> {
 
     render() {
         const {searchQuery, searchPending, errorMsg, searchResultPages} = this.state;
+        const {favoritePageIds} = this.props;
+        const resultWithFavorites = searchResultPages && searchResultPages.map(page => {
+            page.isFavorite = (favoritePageIds.indexOf(page.pageid) >= 0);
+            return page;
+        });
 
         return (
             <View style={styles.container}>
-
 
                 <Searchbar
                     placeholder="Rechercher"
@@ -42,8 +46,10 @@ class HomeScreen extends Component<Props> {
                     {searchResultPages && (searchResultPages.length === 0 ?
                         <Text>Aucun résultat trouvé :-( </Text>
                         :
-                        <FlatList data={searchResultPages} renderItem={this.renderPageCard}
-                                  onEndReached={this.onLoadMore}>
+                        <FlatList data={resultWithFavorites} renderItem={this.renderPageCard}
+                                  onEndReached={this.onLoadMore}
+                                  keyExtractor={(item, index) => index.toString()}
+                        >
 
                         </FlatList>)
                     }
@@ -58,7 +64,14 @@ class HomeScreen extends Component<Props> {
         return <Card key={'card_' + index} style={styles.card}>
             <Card.Title key={'cardTitle_' + index} title={item.title} subtitle={item.description}
                         left={(props) =>
-                            <Image {...props} key={'cardThumb_' + index} source={{uri: item.thumbnail && item.thumbnail.source}} style={{height: 45, width: 45, backgroundColor:'#ddd'}}/>}
+                            <Image {...props} key={'cardThumb_' + index}
+                                   source={{uri: item.thumbnail && item.thumbnail.source}}
+                                   style={{height: 45, width: 45, backgroundColor: '#ddd'}}/>
+                        }
+                        right={props =>
+                            <IconButton icon={item.isFavorite?'favorite':'favorite-border'} color={Colors.gray} size={30}
+                                        onPress={() => this.toggleFavorite(item)}/>
+                        }
             />
         </Card>
     };
@@ -109,6 +122,16 @@ class HomeScreen extends Component<Props> {
         }
     }
 
+    // ------------------------------------------------------------------------------------------------ private
+
+    toggleFavorite = (page) => {
+        if (page.isFavorite) {
+            this.props.removeFavoriteAction(page);
+        } else {
+            this.props.addFavoriteAction(page);
+        }
+    }
+
 }
 
 const styles = StyleSheet.create({
@@ -136,7 +159,7 @@ const styles = StyleSheet.create({
 // here we're mapping state to props
 const mapStateToProps = state => {
     return {
-        favoritePageIds : state.favorites.pages.map(page => page.pageid)
+        favoritePageIds: state.favorites.pages.map(page => page.pageid)
     };
 };
 
