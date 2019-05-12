@@ -6,7 +6,9 @@ export const Colors = {
     accent: '#ffda1e',
     white: '#fff',
     gray: '#666',
-    background: '#fff'
+    background: '#fff',
+    error: '#fc0000'
+
 };
 
 export const Theme = {
