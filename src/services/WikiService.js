@@ -6,9 +6,9 @@ const BASE_URI = 'https://fr.wikipedia.org/w/api.php?';
 
 export class WikiService {
 
-    async search(keyword) {
+    async search(keyword, offset=0) {
 
-        const url = BASE_URI + 'action=query&format=json&generator=search&prop=pageimages|description&gsrsearch=' + keyword.replace(/&/g, ' ').replace(/=/g, ' ');
+        const url = BASE_URI + `action=query&format=json&generator=search&prop=pageimages|description&gsroffset=${offset}&gsrsearch=` + keyword.replace(/&/g, ' ').replace(/=/g, ' ');
         console.log("url : " + url);
         const response = await fetch(url);
         console.log("response : " + JSON.stringify(response));

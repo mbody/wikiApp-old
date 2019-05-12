@@ -28,23 +28,22 @@ export default class HomeScreen extends Component<Props> {
 
                 <Searchbar
                     placeholder="Rechercher"
-                    onChangeText={query => {
-                        this.setState({searchQuery: query});
-                    }}
+                    onChangeText={this.onChangeText}
                     onIconPress={this.onSearch}
                     value={searchQuery}
                 />
 
                 <View style={styles.searchResultsContainer}>
-                    {searchPending && <ActivityIndicator/>}
                     {errorMsg && <Text style={styles.errorMsg}>{errorMsg}</Text>}
                     {searchResultPages && (searchResultPages.length === 0 ?
                         <Text>Aucun résultat trouvé :-( </Text>
                         :
-                        <FlatList data={searchResultPages} renderItem={this.renderPageCard}>
+                        <FlatList data={searchResultPages} renderItem={this.renderPageCard}
+                                  onEndReached={this.onLoadMore}>
 
                         </FlatList>)
                     }
+                    {searchPending && <ActivityIndicator/>}
                 </View>
 
             </View>
@@ -53,18 +52,29 @@ export default class HomeScreen extends Component<Props> {
 
     renderPageCard = ({item, index}) => {
         return <Card key={'card_' + index} style={styles.card}>
-            <Card.Title title={item.title} subtitle={item.description}
-                        left={(props) => item.thumbnail &&
-                            <Image {...props} source={{uri: item.thumbnail.source}} style={{height: 40, width: 40}}/>}
+            <Card.Title key={'cardTitle_' + index} title={item.title} subtitle={item.description}
+                        left={(props) =>
+                            <Image {...props} key={'cardThumb_' + index} source={{uri: item.thumbnail && item.thumbnail.source}} style={{height: 45, width: 45, backgroundColor:'#ddd'}}/>}
             />
         </Card>
-    }
+    };
+
+    onChangeText = query => {
+        if (!query || query.length === 0) {
+            this.setState({searchResultPages: false, errorMsg: false});
+        }
+        this.setState({searchQuery: query});
+    };
 
     onSearch = async () => {
         const {searchQuery} = this.state;
-        if (!searchQuery || searchQuery.trim().length === 0) return;
+        if (!searchQuery || searchQuery.trim().length === 0) {
+            this.setState({searchResultPages: false, errorMsg: false});
+            return;
+        }
 
         this.setState({searchPending: true, searchResultPages: false, errorMsg: false});
+
 
         try {
             const searchResultPages = await wikiService.search(searchQuery.trim());
@@ -77,6 +87,22 @@ export default class HomeScreen extends Component<Props> {
             })
         }
 
+    };
+
+    onLoadMore = async () => {
+        let {searchResultPages, searchQuery} = this.state;
+        this.setState({errorMsg: false});
+
+        try {
+            const moreResultPages = await wikiService.search(searchQuery.trim(), searchResultPages.length);
+            searchResultPages = searchResultPages.concat(moreResultPages);
+            this.setState({searchResultPages})
+        } catch (error) {
+            console.error("Error while searching wikipedia", error);
+            this.setState({
+                errorMsg: `Une erreur s'est produite lors de la recherche.\nMerci de bien vouloir réessayer ultérieurement !`
+            })
+        }
     }
 
 }
@@ -97,7 +123,7 @@ const styles = StyleSheet.create({
         color: Colors.error
     },
     card: {
-        marginVertical: 5,
+        margin: 5,
         backgroundColor: '#f9f9f9'
     }
 });
