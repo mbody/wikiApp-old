@@ -11,10 +11,12 @@ import {Platform, StyleSheet, Text, View, FlatList, Image} from 'react-native';
 import {ActivityIndicator, Searchbar, Card, Paragraph, Title} from "react-native-paper";
 import {Colors} from "../Theme";
 import {wikiService} from "../services/WikiService";
+import { connect } from 'react-redux';
+import {addFavoriteAction} from "../redux/favorites";
 
 type Props = {};
 
-export default class HomeScreen extends Component<Props> {
+class HomeScreen extends Component<Props> {
 
     state = {
         searchQuery: 'nelson mandela',
@@ -23,8 +25,10 @@ export default class HomeScreen extends Component<Props> {
 
     render() {
         const {searchQuery, searchPending, errorMsg, searchResultPages} = this.state;
+
         return (
             <View style={styles.container}>
+
 
                 <Searchbar
                     placeholder="Rechercher"
@@ -127,3 +131,21 @@ const styles = StyleSheet.create({
         backgroundColor: '#f9f9f9'
     }
 });
+
+
+// here we're mapping state to props
+const mapStateToProps = state => {
+    return {
+        favoritePageIds : state.favorites.pages.map(page => page.pageid)
+    };
+};
+
+// here we're mapping actions to props
+const mapDispatchToProps = (dispatch) => {
+    return {
+        addFavoriteAction: (page) => dispatch(addFavoriteAction(page)),
+        removeFavoriteAction: (page) => dispatch(removeFavoriteAction(page))
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

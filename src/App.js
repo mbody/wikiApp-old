@@ -7,11 +7,28 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
-import {Searchbar} from "react-native-paper";
+
 import { createAppContainer } from 'react-navigation';
 import {TabNavigator} from "./TabNavigator";
 
-type Props = {};
+import {Provider as PaperProvider} from 'react-native-paper';
+import {Theme} from "./Theme";
 
-export default createAppContainer(TabNavigator);
+import {Provider as StoreProvider} from 'react-redux';
+import {configureStore} from "./redux/configureStore";
+
+const Navigation = createAppContainer(TabNavigator);
+const store = configureStore();
+
+export default class App extends Component {
+
+    render() {
+        return (
+            <StoreProvider store={store}>
+                <PaperProvider theme={Theme}>
+                    <Navigation/>
+                </PaperProvider>
+            </StoreProvider>
+        );
+    }
+}
