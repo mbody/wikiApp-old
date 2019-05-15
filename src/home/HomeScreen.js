@@ -14,6 +14,7 @@ import {wikiService} from "../services/WikiService";
 import {connect} from 'react-redux';
 import {addFavoriteAction, removeFavoriteAction} from "../redux/favorites";
 import {searchAction, searchClearAction} from "../redux/wikipedia";
+import * as Animatable from 'react-native-animatable';
 
 type Props = {};
 
@@ -28,6 +29,9 @@ class HomeScreen extends Component<Props> {
         if (this.props.searchResult != nextProps.searchResult){
             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         }
+        if (nextProps.searchResult && nextProps.searchResult.length === 0) {
+            this.shakeSearchBar();
+        }
     }
 
     render() {
@@ -41,12 +45,14 @@ class HomeScreen extends Component<Props> {
         return (
             <View style={styles.container}>
 
-                <Searchbar
-                    placeholder="Rechercher"
-                    onChangeText={this.onChangeText}
-                    onIconPress={this.onSearch}
-                    value={searchQuery}
-                />
+                <Animatable.View ref={me => this.searchBar = me} style={{alignSelf:'stretch'}}>
+                    <Searchbar
+                        placeholder="Rechercher"
+                        onChangeText={this.onChangeText}
+                        onIconPress={this.onSearch}
+                        value={searchQuery}
+                    />
+                </Animatable.View>
 
                 <View style={styles.searchResultsContainer}>
                     {error && <Text style={styles.errorMsg}>{error}</Text>}
@@ -90,9 +96,11 @@ class HomeScreen extends Component<Props> {
                                    style={{height: 45, width: 45, backgroundColor: '#ddd'}}/>
                         }
                         right={props =>
+                            <Animatable.View animation={item.isFavorite ? 'pulse' : '' } iterationCount={3}>
                             <IconButton icon={item.isFavorite ? 'favorite' : 'favorite-border'} color={Colors.gray}
                                         size={30}
                                         onPress={() => this.toggleFavorite(item)}/>
+                            </Animatable.View>
                         }
             />
         </Card>
@@ -108,6 +116,7 @@ class HomeScreen extends Component<Props> {
     onSearch = () => {
         const {searchQuery} = this.state;
         if (!searchQuery || searchQuery.trim().length === 0) {
+            this.shakeSearchBar();
             this.props.searchClearAction();
             return;
         }
@@ -129,6 +138,10 @@ class HomeScreen extends Component<Props> {
         } else {
             this.props.addFavoriteAction(page);
         }
+    }
+
+    shakeSearchBar() {
+        this.searchBar.shake(1000);
     }
 
 }
