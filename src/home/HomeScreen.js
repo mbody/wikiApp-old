@@ -7,7 +7,7 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, FlatList, Image} from 'react-native';
+import {Platform, StyleSheet, Text, View, FlatList, Image, LayoutAnimation} from 'react-native';
 import {ActivityIndicator, Searchbar, Card, IconButton} from "react-native-paper";
 import {Colors} from "../Theme";
 import {wikiService} from "../services/WikiService";
@@ -22,6 +22,13 @@ class HomeScreen extends Component<Props> {
     state = {
         searchQuery: 'nelson mandela',
     };
+
+
+    componentWillReceiveProps(nextProps: Readonly<P>, nextContext: any): void {
+        if (this.props.searchResult != nextProps.searchResult){
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        }
+    }
 
     render() {
         const {searchQuery} = this.state;
@@ -57,8 +64,17 @@ class HomeScreen extends Component<Props> {
                     }
                 </View>
                 {searchPending &&
-                <View style={{position:'absolute', bottom: 10, backgroundColor: Colors.white, width:50, height:50, borderRadius:25, alignItems: 'center', justifyContent: 'center'}}>
-                    <ActivityIndicator />
+                <View style={{
+                    position: 'absolute',
+                    bottom: 10,
+                    backgroundColor: Colors.white,
+                    width: 50,
+                    height: 50,
+                    borderRadius: 25,
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    <ActivityIndicator/>
                 </View>}
 
             </View>
@@ -133,7 +149,7 @@ const styles = StyleSheet.create({
     errorMsg: {
         color: Colors.error
     },
-    list:{
+    list: {
         alignSelf: 'stretch'
     },
     card: {
