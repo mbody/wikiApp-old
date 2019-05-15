@@ -7,7 +7,7 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, FlatList, Image, LayoutAnimation} from 'react-native';
+import {Platform, StyleSheet, Text, View, FlatList, Image, TouchableOpacity, LayoutAnimation} from 'react-native';
 import {ActivityIndicator, Searchbar, Card, IconButton} from "react-native-paper";
 import {Colors} from "../Theme";
 import {wikiService} from "../services/WikiService";
@@ -16,6 +16,8 @@ import {addFavoriteAction, removeFavoriteAction} from "../redux/favorites";
 import {searchAction, searchClearAction} from "../redux/wikipedia";
 import * as Animatable from 'react-native-animatable';
 import FavoriteButton from "../components/FavoriteButton";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import PageCard from "../components/PageCard";
 
 type Props = {};
 
@@ -25,9 +27,8 @@ class HomeScreen extends Component<Props> {
         searchQuery: 'nelson mandela',
     };
 
-
     componentWillReceiveProps(nextProps: Readonly<P>, nextContext: any): void {
-        if (this.props.searchResult != nextProps.searchResult){
+        if (this.props.searchResult != nextProps.searchResult) {
             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         }
         if (nextProps.searchResult && nextProps.searchResult.length === 0) {
@@ -46,7 +47,7 @@ class HomeScreen extends Component<Props> {
         return (
             <View style={styles.container}>
 
-                <Animatable.View ref={me => this.searchBar = me} style={{alignSelf:'stretch'}}>
+                <Animatable.View ref={me => this.searchBar = me} style={{alignSelf: 'stretch'}}>
                     <Searchbar
                         placeholder="Rechercher"
                         onChangeText={this.onChangeText}
@@ -88,19 +89,8 @@ class HomeScreen extends Component<Props> {
         );
     }
 
-    renderPageCard = ({item, index}) => {
-        return <Card key={'card_' + index} style={styles.card}>
-            <Card.Title key={'cardTitle_' + index} title={item.title} subtitle={item.description}
-                        left={(props) =>
-                            <Image {...props} key={'cardThumb_' + index}
-                                   source={{uri: item.thumbnail && item.thumbnail.source}}
-                                   style={{height: 45, width: 45, backgroundColor: '#ddd'}}/>
-                        }
-                        right={props =>
-                                <FavoriteButton isFavorite={item.isFavorite} onPress={() => this.toggleFavorite(item)}/>
-                        }
-            />
-        </Card>
+    renderPageCard = ({item}) => {
+        return item && <PageCard item={item} onToggleFavorite={() => this.toggleFavorite(item)}/>
     };
 
     onChangeText = query => {
@@ -162,10 +152,7 @@ const styles = StyleSheet.create({
     list: {
         alignSelf: 'stretch'
     },
-    card: {
-        margin: 5,
-        backgroundColor: '#f9f9f9',
-    }
+
 });
 
 

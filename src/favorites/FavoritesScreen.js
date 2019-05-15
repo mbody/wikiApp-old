@@ -7,13 +7,11 @@
  */
 
 import React, {Component} from 'react';
-import {FlatList, Image, LayoutAnimation, Platform, StyleSheet, Text, View} from 'react-native';
-import {Card, IconButton, Searchbar, Title} from "react-native-paper";
-import {addFavoriteAction, removeFavoriteAction} from "../redux/favorites";
-import {searchAction, searchClearAction} from "../redux/wikipedia";
+import {LayoutAnimation, FlatList, StyleSheet, Text, View} from 'react-native';
+import {Title} from "react-native-paper";
+import {removeFavoriteAction} from "../redux/favorites";
 import {connect} from "react-redux";
-import {Colors} from "../Theme";
-import FavoriteButton from "../components/FavoriteButton";
+import PageCard from "../components/PageCard";
 
 type Props = {};
 
@@ -44,20 +42,8 @@ class FavoritesScreen extends Component<Props> {
       </View>
     );
   }
-
-  renderPageCard = ({item, index}) => {
-    return <Card key={'card_' + index} style={styles.card}>
-      <Card.Title key={'cardTitle_' + index} title={item.title} subtitle={item.description}
-                  left={(props) =>
-                      <Image {...props} key={'cardThumb_' + index}
-                             source={{uri: item.thumbnail && item.thumbnail.source}}
-                             style={{height: 45, width: 45, backgroundColor: '#ddd'}}/>
-                  }
-                  right={props =>
-                      <FavoriteButton isFavorite={true} onPress={()=>(this.toggleFavorite(item))}/>
-                  }
-      />
-    </Card>
+  renderPageCard = ({item}) => {
+    return item && <PageCard item={item} onToggleFavorite={() => this.toggleFavorite(item)}/>
   };
 
 

@@ -1,8 +1,9 @@
 import React from 'react';
-import {Animated, Text, View, StyleSheet, Easing} from 'react-native';
+import {Animated, Text, View, StyleSheet, Easing, TouchableOpacity} from 'react-native';
 import {Colors} from "../Theme";
 import {IconButton} from "react-native-paper";
 import * as Animatable from "react-native-animatable";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 type Props = {
     isFavorite: boolean,
@@ -16,22 +17,28 @@ export default class FavoriteButton extends React.Component<Props> {
 
     render() {
         let {animValue} = this.state;
-        let {isFavorite} = this.props;
+        let {isFavorite, title} = this.props;
 
         const animatedColor = animValue.interpolate({
             inputRange: [0, 1],
-            outputRange: [ 'rgba(255, 0, 0, 1)', 'rgba(255, 0, 0, 0)']
+            outputRange: ['rgba(255, 0, 0, 1)', 'rgba(255, 0, 0, 0)']
         });
 
         return (
-            <Animatable.View animation={isFavorite ? 'pulse' : '' } iterationCount={3}>
-                <Animated.View style={[styles.bg, {backgroundColor: animatedColor}]}>
-                    <IconButton icon={isFavorite ? 'favorite' : 'favorite-border'}
-                                color={isFavorite?Colors.red:Colors.gray}
-                                size={30}
-                                onPress={this.onButtonPressed}/>
-                </Animated.View>
-            </Animatable.View>
+            <TouchableOpacity accessible={true}
+                              accessibilityLabel="Bouton favoris"
+                              accessibilityHint={`${isFavorite ? 'Retirer':'Ajouter'} la page ${title} ${isFavorite ? 'de':'à'}  vos favoris`}
+                              onPress={this.onButtonPressed}>
+                <Animatable.View accessible={true} accessibleLabel='Bouton Favoris' accessibilityRole='button'
+                                 accessibleHint='Ajouter cette page en favoris' animation={isFavorite ? 'pulse' : ''}
+                                 iterationCount={3}>
+                    <Animated.View style={[styles.bg, {backgroundColor: animatedColor}]}>
+                        <Icon name={isFavorite ? 'favorite' : 'favorite-border'}
+                              color={isFavorite ? Colors.red : Colors.gray}
+                              size={30}/>
+                    </Animated.View>
+                </Animatable.View>
+            </TouchableOpacity>
         );
     }
 
