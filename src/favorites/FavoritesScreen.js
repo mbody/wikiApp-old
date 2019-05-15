@@ -13,6 +13,7 @@ import {addFavoriteAction, removeFavoriteAction} from "../redux/favorites";
 import {searchAction, searchClearAction} from "../redux/wikipedia";
 import {connect} from "react-redux";
 import {Colors} from "../Theme";
+import FavoriteButton from "../components/FavoriteButton";
 
 type Props = {};
 
@@ -53,9 +54,7 @@ class FavoritesScreen extends Component<Props> {
                              style={{height: 45, width: 45, backgroundColor: '#ddd'}}/>
                   }
                   right={props =>
-                      <IconButton icon={'favorite'} color={Colors.gray}
-                                  size={30}
-                                  onPress={() => this.toggleFavorite(item)}/>
+                      <FavoriteButton isFavorite={true} onPress={()=>(this.toggleFavorite(item))}/>
                   }
       />
     </Card>

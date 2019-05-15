@@ -15,6 +15,7 @@ import {connect} from 'react-redux';
 import {addFavoriteAction, removeFavoriteAction} from "../redux/favorites";
 import {searchAction, searchClearAction} from "../redux/wikipedia";
 import * as Animatable from 'react-native-animatable';
+import FavoriteButton from "../components/FavoriteButton";
 
 type Props = {};
 
@@ -96,11 +97,7 @@ class HomeScreen extends Component<Props> {
                                    style={{height: 45, width: 45, backgroundColor: '#ddd'}}/>
                         }
                         right={props =>
-                            <Animatable.View animation={item.isFavorite ? 'pulse' : '' } iterationCount={3}>
-                            <IconButton icon={item.isFavorite ? 'favorite' : 'favorite-border'} color={Colors.gray}
-                                        size={30}
-                                        onPress={() => this.toggleFavorite(item)}/>
-                            </Animatable.View>
+                                <FavoriteButton isFavorite={item.isFavorite} onPress={() => this.toggleFavorite(item)}/>
                         }
             />
         </Card>
