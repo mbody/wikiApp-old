@@ -7,8 +7,8 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
-import {Searchbar} from "react-native-paper";
+import {StyleSheet, Text, TouchableOpacity, View, Alert} from 'react-native';
+import RNHelloNative from 'react-native-hello-native';
 
 type Props = {};
 
@@ -20,9 +20,15 @@ export default class HistoryScreen extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
-        <Text>History Screen</Text>
+        <TouchableOpacity onPress={this.onPress}>
+          <Text>Say Hello</Text>
+        </TouchableOpacity>
       </View>
     );
+  }
+
+  onPress = () => {
+    RNHelloNative.sayHello('Me', (response)=>Alert.alert('Message from HelloNative', '***  ' + response + ' ***'));
   }
 }
 
